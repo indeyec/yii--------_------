@@ -84,6 +84,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function validatePassword($password){
         return $this->password === md5($password);
     }
+    
+    public function isAdmin()
+    {
+        return $this->role === 1;
+    }
 
     static public function findByUsername($username){
         return self::find()->where(['login'=>$username])->one();
@@ -101,4 +106,6 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         $this->password = md5($this->password);
         return true;
     }
+
+    
 }
