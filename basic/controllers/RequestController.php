@@ -3,10 +3,12 @@
 namespace app\controllers;
 
 use app\models\Request;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;;
 
 /**
  * RequestController implements the CRUD actions for Request model.
@@ -79,19 +81,17 @@ class RequestController extends Controller
     {
         $model = new Request();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+        if ($model->upload()) {
+            return $this->redirect(['/user/index']);
             }
-        } else {
-            $model->loadDefaultValues();
         }
-
         return $this->render('create', [
             'model' => $model,
         ]);
+    
     }
-
     /**
      * Updates an existing Request model.
      * If update is successful, the browser will be redirected to the 'view' page.

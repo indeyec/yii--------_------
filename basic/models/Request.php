@@ -23,6 +23,7 @@ use Yii;
  */
 class Request extends \yii\db\ActiveRecord
 {
+    public $imageFile;
     /**
      * {@inheritdoc}
      */
@@ -37,7 +38,8 @@ class Request extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_user', 'id_category', 'name', 'description', 'image'], 'required'],
+            [['id_user', 'id_category', 'name', 'description', 'image','imageFile'], 'required'],
+            [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg'],
             [['id_user', 'id_category', 'status'], 'integer'],
             [['description', 'after_description'], 'string'],
             [['date'], 'safe'],
@@ -55,12 +57,13 @@ class Request extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'id_user' => 'Id User',
-            'id_category' => 'Id Category',
-            'name' => 'Name',
-            'description' => 'Description',
-            'image' => 'Image',
-            'status' => 'Status',
-            'date' => 'Date',
+            'id_category' => 'Категория',
+            'name' => 'Название',
+            'description' => 'Описание',
+            'image' => 'Фото',
+            'status' => 'Статус',
+            'imageFile' => 'Изображение',
+            'date' => 'Дата',
             'after_image' => 'After Image',
             'after_description' => 'After Description',
         ];
@@ -84,5 +87,17 @@ class Request extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'id_user']);
+    }
+
+    public function upload()
+    {
+        $this->image = $this->imageFile->baseName . '.' . $this->imageFile->extension;
+        if ($this->validate()) {
+            $this->imageFile->saveAs('web/uploads/' . $this->imageFile->baseName . '.' . $this->imageFile->extension);
+            $this->save(false);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

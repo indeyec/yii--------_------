@@ -4,20 +4,21 @@ use app\models\User;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
+
 use yii\grid\GridView;
 
 /** @var yii\web\View $this */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Users';
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Добавить заявку', ['/request/create'], ['class' => 'btn btn-success']) ?>
     </p>
 
 
@@ -26,18 +27,37 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'login',
-            'email:email',
-            'fio',
-            'password',
-            //'role',
+            'name',
+            'description',
+            'data',
             [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, User $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                'attribute'=>'image',
+                'format'=>'raw',
+                'value'=>function($item){
+                    return '<img alt="" src="../web/uploads/'.$item['image'].'">';
+                }
+
             ],
+            [
+                'attribute' => 'status',
+                'format'=> 'raw',
+                'value'=>function($item){
+                    if($item['status']=== 0 ) return 'на рассмотрении';
+                    if($item['status']=== 1 ) return 'принято';
+                    if($item['status']=== 2 ) return 'откланено';
+                }
+            ],
+            [
+                'attribute'=>'after_image',
+                'format'=>'raw',
+                'value'=>function($item){
+                    return '<img alt="" src="../web/uploads/'.$item['after_image'].'">';
+                }
+
+            ],
+            'after_description',
+
+            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 
